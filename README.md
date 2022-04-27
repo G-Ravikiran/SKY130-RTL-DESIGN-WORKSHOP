@@ -5,8 +5,8 @@
   * ### [Project Scope](https://github.com/G-Ravikiran/SKY130-RTL-DESIGN-WORKSHOP/blob/main/README.md#project-scope)
   * ### [Getting Started](https://github.com/G-Ravikiran/SKY130-RTL-Design-Workshop/blob/main/README.md#getting-started)
   * ### [Introduction to Verilog RTL Design & Synthesis](https://github.com/G-Ravikiran/SKY130-RTL-Design-Workshop/blob/main/README.md#day-1----introduction-to-verilog-rtl-design-and-synthesis)
-  * #### [Setting up libraries & lab instances](
-  * #### [iverilog Simulation of 2:1 MUX RTL Design](
-  * #### [Synthesis using YOSYS Tool](
+   * #### [Setting up libraries & lab instances](https://github.com/G-Ravikiran/SKY130-RTL-Design-Workshop/blob/main/README.md#part-1----setup-the-lab-instance-with-libraries-and-verilog-files)
+   * #### [iverilog Simulation of 2:1 MUX RTL Design]
+   * #### [Synthesis using YOSYS Tool]
 
 
