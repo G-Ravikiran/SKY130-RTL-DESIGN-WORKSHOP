@@ -9,16 +9,6 @@
    * #### [iverilog Simulation of 2:1 MUX RTL Design](https://github.com/G-Ravikiran/SKY130-RTL-Design-Workshop/blob/main/README.md#part-2---simulation-using-iverilog-simulator---21-multiplexer-rtl-design)
    * #### [Synthesis using YOSYS Tool](https://github.com/G-Ravikiran/SKY130-RTL-Design-Workshop/blob/main/README.md#part-3----synthesis-using-yosys-open-source-tool)
 
-
-
-
-
-
-
-
-
-
-
 ## Day 1 -  Introduction to Verilog RTL Design and Synthesis
 
 The first day covers the basics of RTL Design, Testbench, Simulation and Synthesis. Open-Source softwares like iverilog (simulator) and YOSYS (Synthesis) are provided through remote access in the portal to practice labs.
@@ -93,5 +83,29 @@ We perform a synthesis of the 2:1 Multiplexer RTL design using YOSYS with approp
 
 The final sysnthesized netlist shows that the 2:1 multiplexer RTL is translated to a gate level representation using yosys.
 
+----
 
+## Day 2 - Timing libs, Hierarchical vs Flat Synthesis & Efficient FlipFlop coding styles
+
+### Part 1 - More about the .lib file
+
+We have seen that a .lib file is a collection of different flavours of standard cells with nets. In this workshop, we use the **sky130_fd_sc_hd_tt_025C_1v80.lib**. Looking in depth into the naming of this lib file, it denotes the following:
+
+fd == Foundry
+
+sd == Standard Cell
+
+hd == High Density
+
+tt == Typical Process
+
+025C == Temperature 
+
+1v80 == Voltage 
+
+Here, the tt_025C_1v80 denote the PVT (Process,Voltage & Temperature corners) of the library design. 
+
+Upon opening the .lib file for reference using --- ```gvim ../my_lib/lib/sky130_fd_sc_hd_tt_025C_1v80.lib```
+
+We get to see detailed parameter values of all the different flavours of standard cells (logic gates etc.). The parameters include the leakage power of each input value of the cell, area of the cell, cell footprint, cell leakage power, driver waveform etc. These parameters vary for each flavour of the same cell with the same functionality. 
 
