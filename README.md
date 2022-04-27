@@ -91,5 +91,7 @@ We perform a synthesis of the 2:1 Multiplexer RTL design using YOSYS with approp
 
 ![netlistcode](https://user-images.githubusercontent.com/104474928/165451249-091978a1-f314-489e-8f89-e8eb1845a0d5.png)
 
+The final sysnthesized netlist shows that the 2:1 multiplexer RTL is translated to a gate level representation using yosys.
+
 
 
