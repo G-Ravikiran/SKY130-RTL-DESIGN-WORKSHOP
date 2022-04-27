@@ -1,5 +1,6 @@
 # SKY130-RTL-DESIGN-WORKSHOP
-<img src="images/Verilog-flyer.png">
-## Table Of Contents 
-  * ### [Project Scope](https://github.com/G-Ravikiran/SKY130-RTL-DESIGN-WORKSHOP/blob/main/README.md#project-scope)
-  
+![Verilog-flyer (1)](https://user-images.githubusercontent.com/104474928/165444531-7100dd83-27a8-4cf3-a2f8-f574f72e82fd.png)
+
+
+
+
