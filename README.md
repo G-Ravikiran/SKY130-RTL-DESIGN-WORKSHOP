@@ -192,5 +192,105 @@ The simulation results of 2 D-Flipflops with async-reset , sync-reset  are as fo
 ![Screenshot 2022-04-27 185858](https://user-images.githubusercontent.com/104474928/165773428-11ce1ecf-a5da-4d14-8393-d0cb0e41dcc8.png)
 
 
+Further, the design files can be synthesized in YOSYS as we have done in the previous sessions. The one new command we use here is the ```dfflibmap``` command, that is used when we deploy D-FlipFlops in the RTL design. The **dfflibmap** command links or maps the library files that contain the details of D-Flipflops to be used for synthesis. The coding snippet for synthesizing a D-Flipflop in YOSYS is given below:
+
+``` 
+$yosys
+
+yosys> read_liberty -lib ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib           
+
+yosys> read_verilog dff_asyncres.v                                                     
+
+yosys> synth -top dff_asyncres                                                         
+
+yosys> dfflibmap -liberty ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+yosys> abc -liberty ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib                    
+
+yosys> show 
+```
+
+The Synthesized netlist of a Asynchronous Synchronous Reset based D-Flipflop is displayed as follows:
+
+![asy_syn](https://user-images.githubusercontent.com/104474928/165773972-6c62fd39-7ccb-4e85-beb3-3201461bda29.png)
+
+----
+
+
+
+## Day 3 - Combinational and Sequential Optimizations
+
+### Part 1 - Intro to Combinational Logic Optimizations
+
+**Why do we need Combinational Logic Optimizations?**
+
+* Primarily to squeeze the logic to get the most optimized design
+  * An optimized design results in comprehensive Area and Power saving
+
+**Types of Combinational Optimizations**
+
+ * Constant Propagation
+    * Direct Optimization Technique
+ * Boolean Logic Optimization
+    * K-Map based 
+    * Quine Mckluskey Algorithms
+
+**CONSTANT PROPAGATION**
+
+In Constant propagation techniques, inputs that are no way related or affecting the changes in the output are ignored/optimized to simplify the combination logic thereby saving area and power usage by those input pins. 
+
+**BOOLEAN LOGIC OPTIMIZATION**
+
+Boolean logic optimization is nothing simplifying a complex boolean expression into a simplified expression by utilizing the laws of boolean logic algebra. 
+
+``` 
+assign y = a?(b?c:(c?a:0)):(!c)
+```
+
+The above equation can be very much simplified into 
+
+```
+y = a'c' + a(bc + b'ca) 
+y = a'c' + abc + ab'c 
+y = a'c' + ac(b+b') 
+y = a'c' + ac
+y = a xor c
+```
+
+Thus, the complex ternary operator based equation is simplified into a simple xor gate with two inputs a and c
+
+The following pictures depict the various versions of combination logic expressions simplified using Combinational logic optimization techniques.
+
+
+![image](https://user-images.githubusercontent.com/104474928/165774836-b6b22a40-3037-4992-828e-ccdc6688e5c9.png)
+
+
+```
+$yosys
+
+yosys> read_liberty -lib ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib           
+
+yosys> read_verilog opt_check.v                                                     
+
+yosys> synth -top opt_check                                                         
+
+yosys> opt_clean -purge
+
+yosys> abc -liberty ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib                    
+
+yosys> show 
+```
+
+In the above snippet, we see a new code ```opt_clean -purge``` which is used to optimize the design by removing un-used net and components in the design after the design top level is synthesized using ```synt -top```
+
+![image](https://user-images.githubusercontent.com/104474928/165775490-865caf61-ae06-4371-97c1-a4f3a1b8f105.png)
+![image](https://user-images.githubusercontent.com/104474928/165775738-a976e86d-1d39-4c3a-9186-7a0eb90a9f07.png)
+![image](https://user-images.githubusercontent.com/104474928/165775946-c9455bb2-3c8f-4e2f-8321-ab811f1a0fcb.png)
+![image](https://user-images.githubusercontent.com/104474928/165776167-edc9dc01-87d4-4eae-8dc6-863854da577c.png)
+
+
+The above images depict various optimizations done on the expressions being simplified by boolean logic optimization
+
+
 
 
