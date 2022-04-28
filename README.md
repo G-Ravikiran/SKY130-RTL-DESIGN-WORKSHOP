@@ -292,5 +292,65 @@ In the above snippet, we see a new code ```opt_clean -purge``` which is used to 
 The above images depict various optimizations done on the expressions being simplified by boolean logic optimization
 
 
+### Part 2 - Intro to Sequential Logic Optimizations
+
+For Sequential Logic optimization, let us the consider the codes below. They are different implementations of D-Flipflop dff with different cases of output assumptions based on the set and reset values. 
+
+![Screenshot 2022-04-28 102230](https://user-images.githubusercontent.com/104474928/165776697-31eaaf25-0d2b-48f4-bf72-a0e1970064a0.png)
+
+Now when we try to simulate the verilog codes of dff_const1 & dff_const2 which are similar except for the output if reset is high, we can see different circuits that are created as a result of optimization of sequential logic. 
+
+![Screenshot 2022-04-28 102552](https://user-images.githubusercontent.com/104474928/165776832-129f1327-89cf-4d47-85de-da4f44587658.png)
+![Screenshot 2022-04-28 102725](https://user-images.githubusercontent.com/104474928/165776866-bcbd1af8-3979-4b4e-ba75-7e9c6432837b.png)
+
+Incase of dff_const1, the output q doesn't immediately become high when reset is low. It waits for the next clock edge to assert back to high. Hence, here the final net will consist of a D-Flipflop with an active low reset. Since, we have coded the RTL to be of active high reset, the input to D-FF is an active high reset through an inverter. 
+
+Incase dff_const2, the output of the logic is q = 1'b1 regardless of the condition of reset (high/low). Hence, the circuit is optimized to just contain the value of q = 1'b1 through a buffer. Here, a D-Flipflop is not synthesized as it is not needed for the logic function of the circuit.
+
+
+
+
+### Part 3 - Sequential Logic Optimizations of Un-used Outputs
+
+In this special case of sequential optmization, we look at an example of a 3-bit counter code given below.
+
+![Screenshot 2022-04-28 102836](https://user-images.githubusercontent.com/104474928/165777247-2d6d4669-3c9f-44c4-bb95-0efc47d1005c.png)
+
+
+The above code is a 3-bit counter that increments from 0 to 7 whenever reset is low. But, we can see that the final output q denotes only the LSB of count that is count[0]. Therefore, the values of output count[2] and count[1] are un-used and in no way affect our output and logic. Thus, when we synthesize we obtain a circuit that only implements output count[0] and forms a toggle to the input of the D-Flipflip d-input.
+
+
+
+![Screenshot 2022-04-28 103321](https://user-images.githubusercontent.com/104474928/165777431-ad51b6cb-6d52-449b-99ef-d35398a4e566.png)
+
+## Day 4 - Gate Level Simulation(GLS), Blocking vs Non-blocking and Synthesis-Simulation Mismatch
+
+### Part 1 - What is Gate Level Simulation (GLS) ?
+
+Running the testbench against the synthesized netlist ouput as a DUT is known as Gate Level Simulation (GLS). The Output netlist should logically be same as the RTL code so that the testbench will align itself when we simulate both the files to obtain the waveforms.
+
+#### Why GLS?
+
+GLS is required to verify the logical correctness of the design post synthesis with the help of the netlist file. It ensures whether the timing of the design is met and for thi, the GLS used to run with delay annotations.
+
+#### How to perform GLS after obtaining a netlist output for a specific RTL design?
+
+To perform GLS using iverilog simulator, we need to add the path of the primitives and sky130 library files along with the netlist verilog code and testbench to successfully obtain the waveforms of post synthesis simulation.
+
+```
+$ iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ***netlist_file.v*** ***testbench_file.v***
+```
+
+An example of GLS vs Simulation output is given below for a ternary operator mux RTL code.
+
+
+
+
+
+
+
+
+
+
 
 
