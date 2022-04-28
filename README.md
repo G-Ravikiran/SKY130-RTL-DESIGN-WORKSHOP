@@ -109,3 +109,88 @@ Upon opening the .lib file for reference using --- ```gvim ../my_lib/lib/sky130_
 
 We get to see detailed parameter values of all the different flavours of standard cells (logic gates etc.). The parameters include the leakage power of each input value of the cell, area of the cell, cell footprint, cell leakage power, driver waveform etc. These parameters vary for each flavour of the same cell with the same functionality. 
 
+### Part 2 - Hierarchical vs Flat Synthesis
+
+Let us consider an example code ```multiple_modules``` which instantiates an ```AND``` & and ```OR``` gate logic in separate sub-modules ```sub_module1``` & ```sub_module2``` respectively. The verilog code for the same is displayed below:
+
+![mulopt](https://user-images.githubusercontent.com/104474928/165769812-074b46eb-caa8-433f-92a8-0b0a4dc0119f.png)
+#### Hierarchical Synthesis
+
+When we synthesize this verilog code using ```YOSYS``` with the following code blocks:
+
+```
+$yosys
+yosys> read_liberty -lib ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib           
+
+yosys> read_verilog multiple_modules.v                                                     
+
+yosys> synth -top mutiple_modules                                                         
+
+yosys> abc -liberty ../my_lib/lib/sky130_fd_sc_hd__tt_025C_1v80.lib                    
+
+yosys> show multiple_modules 
+```
+
+We get a netlist comprising of sub_module1 & sub_module2 instead of the logic gates AND & OR based netlist. This is because, the multiple_modules RTL design eventhough is implementing two logic gates based circuit, the gates are actually instances inside two separate sub_modules that are instantiated to obtain the specific logic. This type of sub_module level synthesis is known as Hierarchical Synthesis as the sub_modules are preserved in its hierarchy.
+
+![Screenshot 2022-04-27 175302](https://user-images.githubusercontent.com/104474928/165770907-ea945688-8a72-4baa-9b80-2e84fe601c9d.png)
+
+Now, we can write out the netlist of the hierarchical netlist file and look at the behavioral implementation of the same. 
+
+```
+write_verilog -noattr multiple_modules_hier.v
+!gvim multiple_modules_hier.v
+```
+where the OR gate is implemented using 2 ```INV``` and 1 ```NAND``` gate. This is because of a technical logic which is known as Stacked PMOS issue. Implementing a logic gate using Stacked PMOS concept results in poor mobility and is always avoided. That is why the OR gate was not implemented using 2 INV and 1 NOR gate logic as PMOS transistors are stacked in NOR gate implementation using transistors.
+
+
+``` 
+yosys> flatten
+```
+
+This command will implement the synthesis procedure without preserving the sub_module hierarchy and we obtain a netlist file of the multiple_modules RTL design implemented using the ```AND``` & ```OR``` gates
+
+The flattened netlist and verilog module of the netlist file are obtained and listed as follows:
+
+```
+write_verilog -noattr multiple_modules_flat.v
+!gvim multiple_modules_flat.v
+```
+
+![image](https://user-images.githubusercontent.com/104474928/165771935-01eb40f5-4eab-42aa-a59d-1a5e7c1eb2c9.png)
+
+#### When do we need sub_module level Synthesis??
+
+* Multiple Instances of the same module within the top level design :
+
+When a design consists of multiple instances of the same module, we can use sub-module level synthesis and replicate the same for all the other instances of the same module and stitch it together to obtain the complete netlist file . This can be done by using one instance of the module in ```synth -top``` command.
+
+* Massive Complex Design:
+
+When there is a very large complex design consisting of several modules, running a complete synthesis will cause to tool like ```YOSYS``` to not provide expected results. In such a case the massive design can be split into small fragments in terms of sub-modules and synthesized separately to obtain simple netlist files and stitch back to get the netlist file of the complex design.
+
+### Part 3 - Efficient Flip-flop coding styles and Optimizations
+
+```Flipflops``` are devices which store a single bit (binary digit) of data in two states '1' or '0'. One common application of these flipflops is in large combinational circuits to avoid **glitch** errors due to propagation delays between logic gates which cause instability in output. The most common types of flip-flops are D-Flipflop, SR-Flipflop, JK Flipflop, T-Flipflop. There are various different methods of implementing these flipflops like synchronous reset and synchronous set or asynchronous reset and set etc. Listed below are different implementation / coding style of D-flipflop with async-reset or sync-reset or async set etc. 
+
+![image](https://user-images.githubusercontent.com/104474928/165773084-dbc081a9-91ed-4456-8a67-ce0564e7189b.png)
+More information and examples of asynchronous and synchronous reset/set based flip-flop design can be found [here](http://www.sunburst-design.com/papers/CummingsSNUG2003Boston_Resets.pdf). 
+Inorder to simulate the RTL designs, we use the ```iverilog``` simulator to obtain simulated .vcd files that can be viewed using ```gtkwave``` analyzer. 
+
+Example Snippet:
+
+```
+iverilog dff_asyncres.v tb_asyncres.v
+./a.out
+gtkwave tb_dff_asyncres.vcd
+```
+
+The simulation results of 2 D-Flipflops with async-reset , sync-reset  are as follows:
+
+![syn](https://user-images.githubusercontent.com/104474928/165773386-975f108b-5498-4bf4-a94f-6bc078965d77.png)
+
+![Screenshot 2022-04-27 185858](https://user-images.githubusercontent.com/104474928/165773428-11ce1ecf-a5da-4d14-8393-d0cb0e41dcc8.png)
+
+
+
+
