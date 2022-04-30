@@ -343,68 +343,71 @@ $ iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_f
 
 An example of GLS vs Simulation output is given below for a ternary operator mux RTL code.
 
+![image](https://user-images.githubusercontent.com/104474928/166090914-bd223686-5165-4aef-a4ee-a60fa4d4219c.png)
+![image](https://user-images.githubusercontent.com/104474928/166091058-557a9052-ce5e-4f2f-9702-52018a7ece03.png)
+![image](https://user-images.githubusercontent.com/104474928/166091103-d5b7d383-a459-4fc4-a100-d4c642a8442c.png)
+![image](https://user-images.githubusercontent.com/104474928/166091188-78ff519c-4f80-41d7-a156-36e4db252e8a.png)
+![image](https://user-images.githubusercontent.com/104474928/166091377-2ca4fb17-61eb-4e13-8618-9336042f968e.png)
+
+The above waveforms represent the Simulation results and GLS results of the ternary_operator_mux.v RTL code. It is obeserved that both the waveforms are same and hence state that GLS of netlist and Simulation of RTL match for all cases.
+
+### Part 2 - Synthesis - Simulation Mismatches
+
+Certain issues rise up when the simulation results of the RTL code do not match with that of the GLS of the synthesized netlist file. Such issues are known as Synthesis-Simulation mismatch. 
+
+#### Major causes of Synthesis-Simulation Mismatches are:
+     
+* Missing sensitivity lists
+* Blocking vs Non-blocking assignments
+* Non-standard verilog coding techniques
+
+#### Missing Sensitivity List
+
+A Simulator works based on an 'activity' --> change in outputs due to change in corresponding inputs. This change can occur to conditions or variables specified in the sensitivity lists. Whereas, a Synthesizer works by only looking at behavioural logic changes and not based on the signal changes in the sensitivity list.
+
+For Example: in an always block, the operation happens only when there is a change in signals listed inside the always block (sensitivity list). Therefore, it is conventional to mention all such signals with the always block. If one or two of the signals are not added to the sensitivity list, then the block may not run for changes in those respective signal changes. This can alter the simulation results and waveforms. But, since **Synthesizer** does not look at the sensitivity list, it executes the logic and provides a different set of waveform outputs during GLS.
+
+Such abnormalities in the simulation output waveforms case a Synthesize-Simulation mismatch due to missing sensitivity list.
+
+As an example Synth-Simulation mismatch due to missing sensitivity list is given below. The RTL is that of a bad implementation of a mux where the output changes in y are not reflected when the sel signal is 0. This is due to improper sensitivity list.
+
+![image](https://user-images.githubusercontent.com/104474928/166091518-1e4bbee5-c261-46e0-a881-22ffaa185b11.png)
+![image](https://user-images.githubusercontent.com/104474928/166091859-84df92d6-f14c-43bd-a98d-993fbefe508d.png)
+![image](https://user-images.githubusercontent.com/104474928/166092146-6ddb6ce7-7a2b-4f3e-b9a5-50e560b131b8.png)
+![image](https://user-images.githubusercontent.com/104474928/166092258-a588adfc-b091-4602-8c8a-c45f224d658c.png)
 
 
+We can clearly see that the simulation of RTL code with testbench shows abnormalities as it follows activity changes where the sensitivity list is incomplete. Whereas, the synthesizer does not work based on the sensitivity list and hence the output of GLS is as per the logic intended. This is known as Synthesis-Simulation Mismatch
+     
+#### Blocking vs Non-blocking Assignments
+
+Blocking and Non-blocking statements are procedural assignment statements that can be implemented only inside an **always** block. 
+
+* Blocking Assignments --> **=** 
+    * Executes the statements in the order in which they are coded.
+* Non-blocking Assignments --> **<=** 
+    * Executes the RHS of all such assignments when the always block is entered and assigned to LHS in a parallel evaluation.
+
+Synthesis-Simulation mismatches due to incorrect ordering of the blocking assignments done inside an always block. 
+
+Let us consider an example code and its outputs below listed below.
+
+![image](https://user-images.githubusercontent.com/104474928/166092503-921f7091-b4ab-44ca-9406-a541ca94bf03.png)
+
+In the above mentioned code, the ordering of blocking assignments is wrong as the assignment of ``` d = x & c ``` is done before ``` x = a | b ```. The value of x in evaluation of d is missing as it happens only the consecutive statement. Hence, while performing a simulation, the output latches on to the past value of x resulting in a flop.
+
+![image](https://user-images.githubusercontent.com/104474928/166092677-f6f7eb16-fcd7-40fd-a264-1dfcfa903ee7.png)
+
+![image](https://user-images.githubusercontent.com/104474928/166092774-e23d654f-0087-42c6-a255-7729e11f2eba.png)
+
+as you can see that th both waveforms do not match.
 
 
+The Synthesis-Simulation mismatch is evident from the descriptions in the waveforms of simulations and GLS. 
 
+Therefore, ``` Always use blocking assignments for Combinational Logic & Non-blocking assignments for Sequential Logic```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+----
 
 ## Day 5 - If.. Case Statements and for loop & for generate statements
 
@@ -421,8 +424,43 @@ It is evident that the if.. conditions are not properly met. When i0 is 1, outpu
 
 ![image](https://user-images.githubusercontent.com/104474928/166089445-cafc6e38-c0a0-4114-8eb4-13d5e0581c7b.png)
 ![image](https://user-images.githubusercontent.com/104474928/166089719-d800bc3f-9338-480d-b161-a9950638f483.png)
+
+
 Let us consider another example of incomplete if.. statements where else..if conditions are specified but the final else condition is omitted which also results in an inferred latch as specified in the output waveforms and netlists.
 
+![image](https://user-images.githubusercontent.com/104474928/166089842-9c054bbc-7395-45dc-972a-cacaed68dd5b.png)
+![image](https://user-images.githubusercontent.com/104474928/166089954-8c96ed5f-7a32-481e-be46-242c81571c6a.png)
+![image](https://user-images.githubusercontent.com/104474928/166090065-734c98fd-e2fe-43df-bc91-0d4a3e883777.png)
+
+
+### Part 2 - CASE.. Statements
+
+Similar to if..statements, **case** statements are implemented inside an always block and are inferred as multiplexer HW when synthesized. But, they can also infer latches if left incomplete. 
+
+Lets us understand by comparing the codes, waveforms and resulting netlists of 
+
+* A complete case statement
+* An incomplete case statement
+
+Given below is the code of an incomplete case statement example which will result in an inferred latch.
+
+
+![Screenshot 2022-04-28 154713](https://user-images.githubusercontent.com/104474928/166090130-aae3be93-0af6-4349-b3c0-43bd2fceca14.png)
+
+![Screenshot 2022-04-28 155257](https://user-images.githubusercontent.com/104474928/166090655-0cf32e8d-272e-421c-9c19-e9fd65569876.png)
+
+![image](https://user-images.githubusercontent.com/104474928/166090731-e7319a2b-a088-4489-ad66-31459c82e723.png)
+
+The example of an incomplete case mentioned above can easily be avoided by using a **default** statement while specifying case options. 
+
+Let us consider the example of a complete case verilog code given below and verify the output waveforms and netlists.
+
+
+![Screenshot 2022-04-28 155912](https://user-images.githubusercontent.com/104474928/166090775-90637e89-4941-4c1e-acd1-e3531e467576.png)
+
+![Screenshot 2022-04-28 160135](https://user-images.githubusercontent.com/104474928/166090770-743b2e96-f1f5-4976-b070-e368e3096cdd.png)
+
+![Screenshot 2022-04-28 160339](https://user-images.githubusercontent.com/104474928/166090764-87cc65d3-7ce5-46d2-8136-beeca7148ccb.png)
 
 
 
@@ -451,15 +489,17 @@ Let us consider another example of incomplete if.. statements where else..if con
 
 
 
+## ACKNOWLEDGEMENTS
 
+* [Kunal Ghosh](https://github.com/kunalg123), Co-Founder [(VLSI SYSTEM DESIGN - VSD)](https://www.vlsisystemdesign.com/?v=a98eef2a3105)
+* [Shon Taware](https://github.com/ShonTaware)
 
+## References
 
-
-
-
-
-
-
+* https://www.vlsisystemdesign.com/rtl-design-using-verilog-with-sky130-technology/?q=%2Frtl-design-using-verilog-with-sky130-technology%2F&v=a98eef2a3105
+* https://github.com/google/skywater-pdk
+* https://github.com/kunalg123/vsdflow
+* https://github.com/kunalg123/sky130RTLDesignAndSynthesisWorkshop
 
 
 
