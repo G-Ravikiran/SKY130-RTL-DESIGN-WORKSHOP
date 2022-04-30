@@ -464,14 +464,45 @@ Let us consider the example of a complete case verilog code given below and veri
 
 
 
+### Part 3 - for..loop vs for..generate statements
+
+### for loop statements
+
+**for** loops are used in looping constructs to evaluate an expression for a repeated number of iterations. They are used inside an **always** block. They are not used in repeated instantiation of modules or HW blocks.
+
+Consider the following example of a 4:1 MUX code using for loop statements. Here, for loops are an easy way of repeatedly running an evaluation expression thereby saving coding space and time. The resulting rtl vs testbench and GLS waveforms match.
 
 
 
+![image](https://user-images.githubusercontent.com/104474928/166094041-65ea0f88-0786-4354-8151-b49b60a2c09b.png)
+![image](https://user-images.githubusercontent.com/104474928/166094111-5c158bad-f6ba-4cd1-9127-f2b4974646e3.png)
+### for..generate statements
+
+for..generate statements are used to instantiate a hardware module for a large number of instantiations. Ex: to instantiate an AND gate 100 times. They should **never** be used inside an **always** block.
+Syntax:
+
+```
+genvar i;
+generate
+     for(.....) begin
+      .........
+      .........
+     end
+```
+
+An example of using for..generate statements is given below. We use generate statements and for loop to implement an 8-bit Ripple Carry Adder which uses multiple instantiations of Full Adder block.
+
+![image](https://user-images.githubusercontent.com/104474928/166094191-6c67609f-53c2-4070-8c54-f6200d3437db.png)
+![image](https://user-images.githubusercontent.com/104474928/166094214-415d4c20-907c-4766-a486-6c72a70b7f3a.png)
+![image](https://user-images.githubusercontent.com/104474928/166094276-bce2db84-27aa-4aa3-b9d0-6ef33e95fcc3.png)
 
 
+![image](https://user-images.githubusercontent.com/104474928/166094450-0042406c-671a-4163-8d9b-9e1be5aa8e89.png)
+![image](https://user-images.githubusercontent.com/104474928/166094723-d8b3c922-b882-4d99-9f1b-333ff1953598.png)
 
+Clearly, we can see that the RCA is working as intended and is implemented by 8 instantiations of Full Adders FA - denoted in the netlist output. 
 
-
+----
 
 
 
