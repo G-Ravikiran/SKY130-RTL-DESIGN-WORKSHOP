@@ -26,7 +26,8 @@
     * #### [CASE.. Statements](https://github.com/SrinathVelavan/SKY130-RTL-Design-Workshop#part-2---case-statements)
     * #### [FOR..loop vs FOR..GENERATE Statements](https://github.com/SrinathVelavan/SKY130-RTL-Design-Workshop#part-3---forloop-vs-forgenerate-statements)
 
-
+* ### [ACKNOWLEDGEMENTS](https://github.com/SrinathVelavan/SKY130-RTL-Design-Workshop#acknowledgements)
+ * ### [References](https://github.com/SrinathVelavan/SKY130-RTL-Design-Workshop#references)
 
 
 ## Day 1 -  Introduction to Verilog RTL Design and Synthesis
